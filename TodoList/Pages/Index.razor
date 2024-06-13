@@ -1,0 +1,55 @@
+﻿@page "/"
+
+@using TodoList.Services
+
+@inject ITodoService _todoService
+
+<PageTitle>Todo List</PageTitle>
+
+<div class="border" style="padding: 20px;">
+    <h4>New Item</h4>
+    <TodoItemForm OnItemAdded="@ItemsChanged" />
+</div>
+
+<div class="border" style="padding: 20px; margin-top: 20px;">
+    <div style="display: flex; flex-direction: column">
+        @foreach (var todo in DisplayedTodos)
+        {
+            <div style="display: flex; margin-bottom: 10px;">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    @if (editItem == todo)
+                    {
+                        <input @bind="editText" class="form-control" style="width: 280px;" />
+                        <button class="btn btn-primary" @onclick="SaveEditItem">Save</button>
+                        <button class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+                    }
+                    else
+                    {
+                        <div class="@ItemClass(todo)" style="width: 280px;">
+                            @todo.Text
+                        </div>
+                        <button class="btn btn-primary" style="margin-right: 10px" @onclick="@(() => EditItem(todo))">Edit</button>
+                        <button class="btn btn-danger" style="margin-right: 10px" @onclick="@(() => DeleteItem(todo))">Delete</button>
+                        @if (todo.Completed)
+                        {
+                            <button class="btn btn-primary" @onclick="@(() => UncompleteItem(todo))">Uncomplete</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-primary" @onclick="@(() => CompleteItem(todo))">Complete</button>
+                        }
+                    }
+                </div>
+            </div>
+        }
+        <div style="margin-top: 20px;">
+            <button class="btn btn-primary" disabled="@IsFirstPage()" @onclick="GoToFirstPage">First</button>
+            <button class="btn btn-primary" disabled="@IsFirstPage()" @onclick="GoToPreviousPage">Previous</button>
+
+            <span style="margin: 0 10px;">Page @currentPage of @TotalPages</span>
+
+            <button class="btn btn-primary" disabled="@IsLastPage()" @onclick="GoToNextPage">Next</button>
+            <button class="btn btn-primary" disabled="@IsLastPage()" @onclick="GoToLastPage">Last</button>
+        </div>
+    </div>
+</div>
